@@ -1,102 +1,390 @@
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
-:root {
-    --primary-blue: #0052cc;
-    --text-dark: #1e293b;
-    --input-border: #cbd5e1;
-    --secondary: #fb641b;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKS Store | Welcome Login</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
-body { background: #f8fafc; min-height: 100vh; color: var(--text-dark); position: relative; overflow-x: hidden; }
-.hidden { display: none !important; }
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+        :root {
+            --primary-blue: #0052cc;
+            --text-dark: #1e293b;
+            --input-border: #cbd5e1;
+            --secondary: #fb641b;
+        }
 
-/* Split Background System (Replica of 1000174125.jpg) */
-.bg-gradient-split {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(135deg, #f0f4f8 65%, #0052cc 65%, #0033aa 100%);
-    z-index: -1;
-}
+        body { background: #f8fafc; min-height: 100vh; color: var(--text-dark); position: relative; overflow-x: hidden; }
+        .hidden { display: none !important; }
 
-.auth-screen { min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 1.5rem; }
-.auth-card {
-    background: #ffffff; border-radius: 24px; padding: 3rem 2.5rem;
-    width: 100%; max-width: 440px; box-shadow: 0 20px 40px rgba(0,0,0,0.06);
-    text-align: center; border: 1px solid rgba(255,255,255,0.8);
-}
+        .bg-gradient-split {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #f0f4f8 65%, #0052cc 65%, #0033aa 100%);
+            z-index: -1;
+        }
 
-.brand-logo-container { display: flex; flex-direction: column; align-items: center; margin-bottom: 1.8rem; }
-.brand-logo-row { display: flex; align-items: center; gap: 0.5rem; }
-.logo-text { font-size: 2.8rem; font-weight: 800; color: #0052cc; letter-spacing: -1px; }
-.logo-text span { color: #0033aa; }
-.logo-sub { font-size: 0.85rem; font-weight: 700; color: #1e293b; letter-spacing: 6px; text-transform: uppercase; margin-top: -0.2rem; }
+        .auth-screen { min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 1.5rem; }
+        .auth-card {
+            background: #ffffff; border-radius: 24px; padding: 3rem 2.5rem;
+            width: 100%; max-width: 440px; box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+            text-align: center; border: 1px solid rgba(255,255,255,0.8);
+        }
 
-.subtitle-heading { font-size: 1.4rem; font-weight: 700; color: #0f172a; margin-bottom: 0.3rem; }
-.subtitle-text { color: #64748b; font-size: 0.95rem; margin-bottom: 2rem; }
-.subtitle-text span { color: #0052cc; font-weight: 600; }
+        .brand-logo-container { display: flex; flex-direction: column; align-items: center; margin-bottom: 1.8rem; }
+        .brand-logo-row { display: flex; align-items: center; gap: 0.5rem; }
+        .logo-text { font-size: 2.8rem; font-weight: 800; color: #0052cc; letter-spacing: -1px; }
+        .logo-sub { font-size: 0.85rem; font-weight: 700; color: #1e293b; letter-spacing: 6px; text-transform: uppercase; margin-top: -0.2rem; }
 
-.form-group { text-align: left; margin-bottom: 1.2rem; }
-.form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; color: #334155; }
+        .subtitle-heading { font-size: 1.4rem; font-weight: 700; color: #0f172a; margin-bottom: 0.3rem; }
+        .subtitle-text { color: #64748b; font-size: 0.95rem; margin-bottom: 2rem; }
+        .subtitle-text span { color: #0052cc; font-weight: 600; }
 
-.input-icon-wrapper {
-    display: flex; align-items: center; border: 1px solid var(--input-border);
-    border-radius: 8px; background: #ffffff; padding: 0 0.8rem;
-}
-.input-icon-wrapper:focus-within { border-color: var(--primary-blue); box-shadow: 0 0 0 3px rgba(0,82,204,0.1); }
-.input-icon-wrapper input, .input-icon-wrapper textarea {
-    width: 100%; padding: 0.75rem 0.5rem; border: none; outline: none; font-size: 0.95rem; color: #0f172a; background: transparent;
-}
-.icon-svg { width: 20px; height: 20px; fill: #94a3b8; flex-shrink: 0; }
-.password-toggle-btn { cursor: pointer; background: none; border: none; display: flex; align-items: center; }
+        .form-group { text-align: left; margin-bottom: 1.2rem; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; color: #334155; }
 
-.options-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.8rem; font-size: 0.88rem; }
-.checkbox-container { display: flex; align-items: center; gap: 0.5rem; color: #475569; cursor: pointer; }
-.forgot-link { color: #0052cc; text-decoration: none; font-weight: 600; }
+        .input-icon-wrapper {
+            display: flex; align-items: center; border: 1px solid var(--input-border);
+            border-radius: 8px; background: #ffffff; padding: 0 0.8rem;
+        }
+        .input-icon-wrapper:focus-within { border-color: var(--primary-blue); box-shadow: 0 0 0 3px rgba(0,82,204,0.1); }
+        .input-icon-wrapper input, .input-icon-wrapper textarea {
+            width: 100%; padding: 0.75rem 0.5rem; border: none; outline: none; font-size: 0.95rem; color: #0f172a; background: transparent;
+        }
+        .icon-svg { width: 20px; height: 20px; fill: #94a3b8; flex-shrink: 0; }
+        .password-toggle-btn { cursor: pointer; background: none; border: none; display: flex; align-items: center; }
 
-.btn-solid-blue {
-    background: #0052cc; color: white; border: none; width: 100%; padding: 0.9rem;
-    border-radius: 8px; font-weight: 700; font-size: 1rem; cursor: pointer;
-}
-.separator-or { display: flex; align-items: center; text-align: center; color: #94a3b8; font-size: 0.8rem; font-weight: 700; margin: 1.5rem 0; }
-.separator-or::before, .separator-or::after { content: ''; flex: 1; border-bottom: 1px solid #e2e8f0; }
-.separator-or:not(:empty)::before { margin-right: .75em; }
-.separator-or:not(:empty)::after { margin-left: .75em; }
+        .options-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.8rem; font-size: 0.88rem; }
+        .checkbox-container { display: flex; align-items: center; gap: 0.5rem; color: #475569; cursor: pointer; }
+        .forgot-link { color: #0052cc; text-decoration: none; font-weight: 600; }
 
-.btn-outlined-blue {
-    background: transparent; color: #0052cc; border: 1px solid #0052cc; width: 100%; padding: 0.85rem;
-    border-radius: 8px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 0.5rem; cursor: pointer;
-}
-.switch-mode-text { margin-top: 1.2rem; font-size: 0.9rem; color: #475569; }
-.switch-mode-text span { color: #0052cc; font-weight: 700; cursor: pointer; }
-.footer-copyright { font-size: 0.8rem; color: #94a3b8; margin-top: 2.5rem; }
-.otp-badge { background: #f0fdf4; border: 1px dashed #16a34a; color: #16a34a; padding: 0.75rem; border-radius: 6px; margin-bottom: 1rem; font-weight: bold; }
+        .btn-solid-blue {
+            background: #0052cc; color: white; border: none; width: 100%; padding: 0.9rem;
+            border-radius: 8px; font-weight: 700; font-size: 1rem; cursor: pointer; width: 100%;
+        }
+        .separator-or { display: flex; align-items: center; text-align: center; color: #94a3b8; font-size: 0.8rem; font-weight: 700; margin: 1.5rem 0; }
+        .separator-or::before, .separator-or::after { content: ''; flex: 1; border-bottom: 1px solid #e2e8f0; }
 
-/* Dynamic Offers Ticker */
-.offer-ticker-container {
-    background: linear-gradient(90deg, #ff0055, #fb641b);
-    color: white; overflow: hidden; white-space: nowrap; padding: 0.6rem 0; font-weight: bold;
-}
-.offer-marquee { display: inline-block; padding-left: 100%; animation: marqueeText 15s linear infinite; }
-@keyframes marqueeText { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
+        .btn-outlined-blue {
+            background: transparent; color: #0052cc; border: 1px solid #0052cc; width: 100%; padding: 0.85rem;
+            border-radius: 8px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 0.5rem; cursor: pointer;
+        }
+        .switch-mode-text { margin-top: 1.2rem; font-size: 0.9rem; color: #475569; }
+        .switch-mode-text span { color: #0052cc; font-weight: 700; cursor: pointer; }
+        .footer-copyright { font-size: 0.8rem; color: #94a3b8; margin-top: 2.5rem; }
+        .otp-badge { background: #f0fdf4; border: 1px dashed #16a34a; color: #16a34a; padding: 0.75rem; border-radius: 6px; margin-bottom: 1rem; font-weight: bold; }
 
-/* App Shell View Elements */
-header { background: #0052cc; color: white; padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; }
-.store-info { background: #fff3e3; color: #8a5300; padding: 0.6rem 5%; font-size: 0.85rem; text-align: center; font-weight: 600; }
-.main-container { display: grid; grid-template-columns: 1.8fr 1.2fr; gap: 2rem; padding: 2rem 5%; }
-.category-heading { margin-bottom:1rem; border-bottom: 2px solid var(--primary-blue); padding-bottom:0.5rem; color: var(--primary-blue); }
-.products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.5rem; }
-.product-card { background: white; border-radius: 12px; padding: 1.2rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: space-between; position: relative; border: 1px solid #e2e8f0;}
-.product-img { width: 100%; height: 140px; object-fit: cover; border-radius: 8px; margin-bottom: 0.8rem; }
-.product-price { font-weight: 700; font-size: 1.3rem; color: #0f172a; }
-.stock-badge { position: absolute; top: 0.5rem; right: 0.5rem; background: #ef4444; color: white; padding: 0.2rem 0.5rem; font-size: 0.7rem; font-weight: bold; border-radius: 4px; }
-.add-btn { background: #fff; color: var(--primary-blue); border: 1px solid #e0e0e0; padding: 0.5rem; cursor: pointer; width: 100%; font-weight: bold; border-radius: 4px; }
-.add-btn:disabled { background: #f1f5f9; color: #94a3b8; cursor: not-allowed; }
+        /* Dynamic Offers Ticker */
+        .offer-ticker-container {
+            background: linear-gradient(90deg, #ff0055, #fb641b);
+            color: white; overflow: hidden; white-space: nowrap; padding: 0.6rem 0; font-weight: bold;
+        }
+        .offer-marquee { display: inline-block; padding-left: 100%; animation: marqueeText 15s linear infinite; }
+        @keyframes marqueeText { 0% { transform: translate33d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
 
-.side-panels { display: flex; flex-direction: column; gap: 1.5rem; }
-.cart-section, .tracking-section { background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0; }
-.cart-section select { width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 4px; }
-.rules-alert { background: #fef2f2; color: #991b1b; padding: 0.6rem; font-size: 0.85rem; border-radius: 4px; display: none; margin-bottom: 1rem; }
-.order-btn { background: var(--secondary); color: white; border: none; width: 100%; padding: 0.9rem; font-weight: bold; text-transform: uppercase; cursor: pointer; border-radius: 4px; }
+        /* App Shell Elements */
+        header { background: #0052cc; color: white; padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; }
+        .store-info { background: #fff3e3; color: #8a5300; padding: 0.6rem 5%; font-size: 0.85rem; text-align: center; font-weight: 600; }
+        .main-container { display: grid; grid-template-columns: 1.8fr 1.2fr; gap: 2rem; padding: 2rem 5%; }
+        .category-heading { margin-bottom:1rem; border-bottom: 2px solid #0052cc; padding-bottom:0.5rem; color: #0052cc; }
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.5rem; }
+        .product-card { background: white; border-radius: 12px; padding: 1.2rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: space-between; position: relative; border: 1px solid #e2e8f0;}
+        .product-img { width: 100%; height: 140px; object-fit: cover; border-radius: 8px; margin-bottom: 0.8rem; }
+        .product-card h4 { font-size: 1.1rem; color: #0f172a; margin-bottom: 0.3rem; }
+        .product-desc { font-size: 0.8rem; color: #64748b; margin-bottom: 0.8rem; height: 35px; overflow: hidden; }
+        .product-price { font-weight: 700; font-size: 1.3rem; color: #0f172a; }
+        .stock-badge { position: absolute; top: 0.5rem; right: 0.5rem; background: #ef4444; color: white; padding: 0.2rem 0.5rem; font-size: 0.7rem; font-weight: bold; border-radius: 4px; }
+        .add-btn { background: #fff; color: #0052cc; border: 1px solid #e0e0e0; padding: 0.5rem; cursor: pointer; width: 100%; font-weight: bold; border-radius: 4px; }
+        .add-btn:disabled { background: #f1f5f9; color: #94a3b8; cursor: not-allowed; }
 
-.track-card { background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.8rem; border-radius: 6px; margin-bottom: 0.8rem; font-size: 0.85rem; }
-.status-badge { display: inline-block; padding: 0.2rem 0.5rem; border-radius: 12px; font-weight: bold; font-size: 0.75rem; margin-top: 0.4rem; }
-.status-pending { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
-.status-delivered { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+        .side-panels { display: flex; flex-direction: column; gap: 1.5rem; }
+        .cart-section, .tracking-section { background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0; }
+        .cart-section select { width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 4px; }
+        .rules-alert { background: #fef2f2; color: #991b1b; padding: 0.6rem; font-size: 0.85rem; border-radius: 4px; display: none; margin-bottom: 1rem; }
+        .order-btn { background: var(--secondary); color: white; border: none; width: 100%; padding: 0.9rem; font-weight: bold; text-transform: uppercase; cursor: pointer; border-radius: 4px; }
+
+        .track-card { background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.8rem; border-radius: 6px; margin-bottom: 0.8rem; font-size: 0.85rem; }
+        .status-badge { display: inline-block; padding: 0.2rem 0.5rem; border-radius: 12px; font-weight: bold; font-size: 0.75rem; margin-top: 0.4rem; }
+        .status-pending { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
+        .status-delivered { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+    </style>
+</head>
+<body>
+
+    <div class="bg-gradient-split" id="split-bg"></div>
+
+    <div id="live-offer-banner" class="offer-ticker-container">
+        <div class="offer-marquee" id="live-offer-text">📢 SPECIAL ANNOUNCEMENT COMING SOON...</div>
+    </div>
+
+    <div id="auth-view" class="auth-screen">
+        <div id="login-card" class="auth-card">
+            <div class="brand-logo-container">
+                <div class="brand-logo-row">
+                    <svg class="icon-svg" style="fill:#0052cc; width:35px; height:35px;" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                    <div class="logo-text">SkS</div>
+                </div>
+                <div class="logo-sub">— STORE —</div>
+            </div>
+            
+            <h2 class="subtitle-heading">Welcome Back!</h2>
+            <p class="subtitle-text">Login using Mobile Number & Password</p>
+            
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Mobile Number</label>
+                    <div class="input-icon-wrapper">
+                        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                        <input type="tel" id="login-phone" placeholder="Enter Mobile Number" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="input-icon-wrapper">
+                        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2.9.9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                        <input type="password" id="login-pass" placeholder="Enter Account Password" required>
+                        <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('login-pass')">
+                            <svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="options-row">
+                    <label class="checkbox-container"><input type="checkbox" checked> Remember me</label>
+                    <a href="#" class="forgot-link">Forgot Password?</a>
+                </div>
+                
+                <button type="submit" class="btn-solid-blue">Login</button>
+            </form>
+            
+            <div class="separator-or">OR</div>
+            <button class="btn-outlined-blue" onclick="window.location.href='admin.html'">
+                <svg class="icon-svg" style="fill:#0052cc; width:18px; height:18px;" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+                Login with Admin Access
+            </button>
+            
+            <div class="switch-mode-text">New Customer? <span onclick="toggleAuthMode('signup')">Sign Up Here</span></div>
+            <div class="footer-copyright">© 2026 <span>SkS Store</span>. Powered by EIND Web Studio.</div>
+        </div>
+
+        <div id="signup-card" class="auth-card hidden">
+            <div class="brand-logo-container">
+                <div class="brand-logo-row"><div class="logo-text">SkS<span> STORE</span></div></div>
+                <div class="logo-sub">— REGISTER PROFILE —</div>
+            </div>
+            <form onsubmit="triggerVirtualOTP(event)">
+                <div class="form-group"><label>Full Name</label><div class="input-icon-wrapper"><input type="text" id="reg-name" required></div></div>
+                <div class="form-group"><label>Mobile Number</label><div class="input-icon-wrapper"><input type="tel" id="reg-phone" required></div></div>
+                <div class="form-group"><label>Full Delivery Address</label><div class="input-icon-wrapper"><textarea id="reg-address" rows="2" required></textarea></div></div>
+                <div class="form-group"><label>Create Password</label><div class="input-icon-wrapper"><input type="password" id="reg-pass" required></div></div>
+                <button type="submit" class="btn-solid-blue" style="background: var(--secondary);">Send Virtual OTP</button>
+            </form>
+            <div class="switch-mode-text">Already registered? <span onclick="toggleAuthMode('login')">Login</span></div>
+        </div>
+
+        <div id="otp-card" class="auth-card hidden">
+            <h2 class="subtitle-heading">Security Gate</h2><br>
+            <div id="otp-display-box" class="otp-badge">Generating Code...</div>
+            <form onsubmit="verifyAndRegister(event)">
+                <div class="form-group"><label>Enter 4-Digit OTP Code</label><div class="input-icon-wrapper"><input type="number" id="input-otp" required></div></div>
+                <button type="submit" class="btn-solid-blue">Verify & Activate Profile</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="store-view" class="hidden">
+        <header>
+            <div class="store-logo">🛍️ SKS Online Kirana Store</div>
+            <div style="display: flex; align-items: center;">
+                <div class="user-badge" id="nav-user-display">👤 Customer Panel</div>
+                <span class="logout-link" onclick="logout()">Logout</span>
+            </div>
+        </header>
+
+        <div class="store-info">📍 Address Network: Mauje Tola, Ward No.3, Bakharaur, Bishunpura, Sidhawaliya, Gopalganj, Bihar 841407</div>
+
+        <div class="main-container">
+            <div>
+                <h3 class="category-heading">Active Market Catalog</h3>
+                <div id="dynamic-products-container" class="products-grid"></div>
+            </div>
+
+            <div class="side-panels">
+                <div class="cart-section">
+                    <h3>PRICE DETAILS</h3><br>
+                    <div id="cart-items-container"><p style="color:#878787;">Cart is empty.</p></div>
+                    <hr style="margin: 1rem 0; border: none; border-top: 1px solid #f0f0f0;">
+                    <div style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom:1rem;">
+                        <span>Total Amount:</span><span id="cart-total">₹0</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Select Delivery Distance</label>
+                        <select id="delivery-distance" onchange="updateCartTotals()">
+                            <option value="under_1km">Under 1 KM (Min Order ₹200)</option>
+                            <option value="1to2km">1 KM to 2 KM (Min Order ₹500)</option>
+                        </select>
+                    </div>
+                    <div id="rules-warning" class="rules-alert"></div>
+                    <button class="order-btn" onclick="checkoutSecureOrder()">Place Order Instantly</button>
+                </div>
+
+                <div class="tracking-section">
+                    <h3 style="color: #16a34a; margin-bottom: 1rem; border-bottom: 2px solid #16a34a; padding-bottom: 0.4rem;">My Orders History ⏳</h3>
+                    <div id="tracking-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCy9rU1T-L7viJOTcbB-YyoKeprDywPCTw",
+            databaseURL: "https://sks-online-d8e4c-default-rtdb.firebaseio.com",
+            projectId: "sks-online-d8e4c"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        let generatedOTP = null, tempUserData = null, currentUser = null, cart = [], totalAmount = 0;
+
+        window.onload = function() {
+            const savedSession = localStorage.getItem('sks_active_session');
+            if(savedSession) {
+                currentUser = JSON.parse(savedSession);
+                executeStoreSession();
+            }
+        };
+
+        function togglePasswordVisibility(fieldId) {
+            const field = document.getElementById(fieldId);
+            field.type = field.type === "password" ? "text" : "password";
+        }
+
+        function toggleAuthMode(mode) {
+            document.getElementById('login-card').classList.add('hidden'); document.getElementById('signup-card').classList.add('hidden'); document.getElementById('otp-card').classList.add('hidden');
+            if(mode === 'login') document.getElementById('login-card').classList.remove('hidden');
+            if(mode === 'signup') document.getElementById('signup-card').classList.remove('hidden');
+        }
+
+        function triggerVirtualOTP(event) {
+            event.preventDefault(); generatedOTP = Math.floor(1000 + Math.random() * 9000);
+            tempUserData = { name: document.getElementById('reg-name').value, phone: document.getElementById('reg-phone').value.trim(), address: document.getElementById('reg-address').value, pass: document.getElementById('reg-pass').value };
+            document.getElementById('signup-card').classList.add('hidden'); document.getElementById('otp-card').classList.remove('hidden');
+            document.getElementById('otp-display-box').innerText = `🔐 VIRTUAL OTP SENT: ${generatedOTP}`;
+        }
+
+        function verifyAndRegister(event) {
+            event.preventDefault(); if (parseInt(document.getElementById('input-otp').value) !== generatedOTP) { alert("Incorrect OTP!"); return; }
+            const customId = 'SKS-CUST-' + Math.floor(1000 + Math.random() * 9000);
+            database.ref('users/' + customId).set({ CustomerId: customId, Name: tempUserData.name, Phone: tempUserData.phone, Address: tempUserData.address, Password: tempUserData.pass }).then(() => {
+                alert(`Account Created Successfully!`); toggleAuthMode('login');
+            });
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const inputField = document.getElementById('login-phone').value.trim();
+            const inputPass = document.getElementById('login-pass').value;
+
+            database.ref('users').once('value', (snapshot) => {
+                let found = false;
+                snapshot.forEach((child) => {
+                    const data = child.val();
+                    // CRITICAL FIX: Safe conversion to String stops type crashing
+                    const dbPhone = String(data.Phone || '').trim();
+                    if ((dbPhone === inputField || data.CustomerId === inputField) && data.Password === inputPass) {
+                        currentUser = data; found = true;
+                    }
+                });
+                if (found) { localStorage.setItem('sks_active_session', JSON.stringify(currentUser)); executeStoreSession(); } 
+                else { alert("Wrong Mobile Number or Password!"); }
+            });
+        }
+
+        function executeStoreSession() {
+            document.getElementById('auth-view').classList.add('hidden'); document.getElementById('split-bg').classList.add('hidden'); document.getElementById('store-view').classList.remove('hidden');
+            document.getElementById('nav-user-display').innerText = `👤 ${currentUser.Name}`;
+            syncLiveOffers(); syncCatalogProducts(); syncCustomerOrders(); updateCartTotals();
+        }
+
+        function logout() {
+            localStorage.removeItem('sks_active_session'); currentUser = null; cart = [];
+            document.getElementById('store-view').classList.add('hidden'); document.getElementById('split-bg').classList.remove('hidden'); document.getElementById('auth-view').classList.remove('hidden');
+            toggleAuthMode('login');
+        }
+
+        function syncLiveOffers() {
+            database.ref('offers_banner').on('value', (snapshot) => {
+                const val = snapshot.val(); const banner = document.getElementById('live-offer-banner');
+                if(val && val.active === true && val.text) { document.getElementById('live-offer-text').innerText = `🔥 ${val.text} 🔥`; banner.style.display = 'block'; } 
+                else { banner.style.display = 'none'; }
+            });
+        }
+
+        function syncCatalogProducts() {
+            const container = document.getElementById('dynamic-products-container');
+            database.ref('products').on('value', (snapshot) => {
+                const productsData = snapshot.val(); if(!productsData) { container.innerHTML = `<p>No active items.</p>`; return; }
+                container.innerHTML = '';
+                Object.keys(productsData).forEach(key => {
+                    const prod = productsData[key]; const isOutOfStock = prod.Stock === "outofstock";
+                    container.innerHTML += `
+                        <div class="product-card">
+                            ${isOutOfStock ? `<span class="stock-badge">Out Of Stock</span>` : ''}
+                            <img src="${prod.Image || ''}" class="product-img" onerror="this.src='https://placehold.co/200x140?text=SKS+Store'">
+                            <h4>${prod.Name}</h4><p class="product-desc">${prod.Desc}</p><div class="product-price">₹${prod.Price}</div>
+                            <button class="add-btn" ${isOutOfStock ? 'disabled' : ''} onclick="addToCart('${prod.Name}', ${prod.Price})">${isOutOfStock ? 'Unavailable' : 'Add to Cart'}</button>
+                        </div>`;
+                });
+            });
+        }
+
+        function syncCustomerOrders() {
+            const trackContainer = document.getElementById('tracking-container');
+            database.ref('orders').on('value', (snapshot) => {
+                const allOrders = snapshot.val(); if(!allOrders) { trackContainer.innerHTML = '<p style="color:#878787;">No logs.</p>'; return; }
+                trackContainer.innerHTML = '';
+                Object.keys(allOrders).reverse().forEach(key => {
+                    const order = allOrders[key];
+                    if(order.CustomerId === currentUser.CustomerId) {
+                        const isDelivered = order.Status === "Delivered";
+                        trackContainer.innerHTML += `
+                            <div class="track-card">
+                                <div><strong>ID:</strong> #${order.OrderId}</div><div style="font-size:0.75rem; color:#64748b;">${order.Time}</div>
+                                <div style="margin:0.2rem 0;">${order.Items ? order.Items.map(i => `${i.name} (${i.qty})`).join(', ') : ''}</div><div><strong>Total:</strong> ₹${order.GrandTotal}</div>
+                                <span class="status-badge ${isDelivered ? 'status-delivered' : 'status-pending'}">${order.Status}</span>
+                            </div>`;
+                    }
+                });
+            });
+        }
+
+        function addToCart(name, price) { let existingItem = cart.find(item => item.name === name); if (existingItem) { existingItem.qty++; } else { cart.push({ name: name, price: price, qty: 1 }); } updateCartTotals(); }
+        function updateCartTotals() {
+            const container = document.getElementById('cart-items-container'); const totalDisplay = document.getElementById('cart-total');
+            if (cart.length === 0) { container.innerHTML = '<p style="color:#878787;">Cart empty.</p>'; totalDisplay.innerText = '₹0'; return; }
+            container.innerHTML = ''; totalAmount = 0;
+            cart.forEach(item => { totalAmount += (item.price * item.qty); container.innerHTML += `<div class="cart-item"><div><strong>${item.name}</strong><br><small>₹${item.price} x ${item.qty}</small></div></div>`; });
+            totalDisplay.innerText = '₹' + totalAmount; checkDeliveryRules();
+        }
+
+        function checkDeliveryRules() {
+            const dist = document.getElementById('delivery-distance').value; const warningBox = document.getElementById('rules-warning');
+            if (cart.length === 0) { warningBox.style.display = 'none'; return false; }
+            if (dist === 'under_1km' && totalAmount < 200) { warningBox.innerText = '⚠️ Min order of ₹200 required for under 1KM.'; warningBox.style.display = 'block'; return false; } 
+            else if (dist === '1to2km' && totalAmount < 500) { warningBox.innerText = '⚠️ Min order of ₹500 required for 1-2KM.'; warningBox.style.display = 'block'; return false; } 
+            else { warningBox.style.display = 'none'; return true; }
+        }
+
+        function checkoutSecureOrder() {
+            if(cart.length === 0 || !checkDeliveryRules()) { alert('Rules incomplete!'); return; }
+            const orderId = 'SKS-ORD-' + Math.floor(100000 + Math.random() * 900000);
+            database.ref('orders/' + orderId).set({
+                OrderId: orderId, CustomerId: currentUser.CustomerId, CustomerName: currentUser.Name, Phone: currentUser.Phone, Address: currentUser.Address, Distance: document.getElementById('delivery-distance').value, Items: cart, GrandTotal: totalAmount, Status: "Pending Delivery", Time: new Date().toLocaleString()
+            }).then(() => { alert(`🎉 Order Placed! ID: #${orderId}`); cart = []; updateCartTotals(); });
+        }
+    </script>
+</body>
+</html>
